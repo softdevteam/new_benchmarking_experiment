@@ -24,7 +24,7 @@ if [ ! -f renaissance-gpl-${RENAISSANCE_V}.jar ]; then
     wget https://github.com/renaissance-benchmarks/renaissance/releases/download/v${RENAISSANCE_V}/renaissance-gpl-${RENAISSANCE_V}.jar
 fi
 
-if [ ! -d graalvm-ce-${GRAALC_V} ]; then
+if [ ! -d graalvm-ce-${GRAALCE_V} ]; then
     wget https://github.com/oracle/graal/releases/download/vm-${GRAALCE_V}/graalvm-ce-${GRAALCE_V}-linux-amd64.tar.gz
     tar xfz graalvm-ce-${GRAALCE_V}-linux-amd64.tar.gz
 fi
