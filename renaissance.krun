@@ -1,0 +1,54 @@
+# Krun config file for running the renaissance suite using Krun's
+# ExternalSuiteVMDef.
+#
+# Note that you will have to make the experiment directory world-writable since
+# the runner expects to make a temporary directory at runtime. Sadly we can't
+# grant only the Krun user this access prior to running the process executions,
+# as the pre-execution scripts run before the Krun user is created.
+
+import os
+from krun.vm_defs import ExternalSuiteVMDef
+
+DIR = os.getcwd()
+
+N_EXECUTIONS = 10
+ITERATIONS_ALL_VMS = 2000
+
+MAIL_TO = []
+
+# These must match the arguments passed to to the runner in krun_ext_*.py
+HEAP_LIMIT = 1024 * 1024 * 1024 * 12
+STACK_LIMIT = 1024 * 1024 * 1024 * 12
+
+VARIANTS = {
+    "default-ext": None,
+}
+
+VMS = {
+    'graal-ce': {
+        'vm_def': ExternalSuiteVMDef(os.path.join(DIR, "krun_ext_graal_ce.py")),
+        'variants': ['default-ext'],
+        'n_iterations': ITERATIONS_ALL_VMS,
+    },
+    'graal-ce-hotspot': {
+        'vm_def': ExternalSuiteVMDef(os.path.join(DIR, "krun_ext_graal_ce_hotspot.py")),
+        'variants': ['default-ext'],
+        'n_iterations': ITERATIONS_ALL_VMS,
+    },
+}
+
+# Benchmark parameters unused in this experiment, so set them all zero.
+BENCHMARKS = {
+    "chi-square": 0,
+    "future-genetic": 0,
+    "gauss-mix": 0,
+    "naive-bayes": 0,
+    "rx-scrabble": 0,
+    "scala-stm-bench7": 0,
+    "scala-kmeans": 0,
+    "scrabble": 0,
+}
+
+SKIP = []
+
+# XXX pre/post exec commands.
