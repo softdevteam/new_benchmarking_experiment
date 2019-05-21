@@ -9,7 +9,12 @@
 # at your option. This file may not be copied, modified, or distributed except according to those
 # terms.
 
+# This script runs the benchmarks (outside of Krun). For a version of the
+# experiment you can run under Krun, see renaissance.krun.
+
 set -e
+
+sh setup.sh
 
 RENAISSANCE_V="0.9.0"
 GRAALCE_V="1.0.0-rc16"
@@ -19,15 +24,6 @@ GRAALCE_V="1.0.0-rc16"
 BENCHMARKS="chi-square,future-genetic,gauss-mix,naive-bayes,rx-scrabble,scala-stm-bench7,scala-kmeans,scrabble"
 PEXECS=10
 IPITERS=2000
-
-if [ ! -f renaissance-gpl-${RENAISSANCE_V}.jar ]; then
-    wget https://github.com/renaissance-benchmarks/renaissance/releases/download/v${RENAISSANCE_V}/renaissance-gpl-${RENAISSANCE_V}.jar
-fi
-
-if [ ! -d graalvm-ce-${GRAALCE_V} ]; then
-    wget https://github.com/oracle/graal/releases/download/vm-${GRAALCE_V}/graalvm-ce-${GRAALCE_V}-linux-amd64.tar.gz
-    tar xfz graalvm-ce-${GRAALCE_V}-linux-amd64.tar.gz
-fi
 
 i=0
 while [ $i -lt ${PEXECS} ]; do
