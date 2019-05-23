@@ -7,6 +7,7 @@
 # as the pre-execution scripts run before the Krun user is created.
 
 import os
+import platform
 from krun.vm_defs import ExternalSuiteVMDef
 
 DIR = os.getcwd()
@@ -70,3 +71,21 @@ POST_EXECUTION_CMDS = [
     "sudo systemctl start postfix || true",
     "sudo systemctl start systemd-tmpfiles-clean.timer || true",
 ]
+
+# Stop cookie and result copy-off.
+HOSTNAME = platform.node().split(".")[0]
+REMOTE_LOGIN = "vext01@bencher8.soft-dev.org"
+REMOTE_DIR = "research/krun_results/"
+COOKIE_PATH = os.path.join(REMOTE_DIR, HOSTNAME + ".stop")
+SSH_BATCH = "ssh -o 'BatchMode yes' -i id_rsa"
+
+SCP_CMD = ("tar czf - ${KRUN_RESULTS_FILE} ${KRUN_LOG_FILE} ${KRUN_MANIFEST_FILE} | "
+           "%s %s 'cat > %s/%s.tgz'" %
+           (SSH_BATCH, REMOTE_LOGIN, REMOTE_DIR, HOSTNAME))
+POST_EXECUTION_CMDS.append(
+    "%s || ( sleep 2; %s ) || true " % (SCP_CMD, SCP_CMD))
+
+# Crash if the "stop cookie" exists on the remote host.
+# Allows us to stop machines with no remote management.
+POST_EXECUTION_CMDS.append("{0} {1} ls {2} 2> /dev/null | grep {2}; exit $((! $?))".format(
+    SSH_BATCH, REMOTE_LOGIN, COOKIE_PATH))
