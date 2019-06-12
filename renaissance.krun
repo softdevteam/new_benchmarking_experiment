@@ -40,13 +40,30 @@ VMS = {
 
 # Benchmark parameters unused in this experiment, so set them all zero.
 BENCHMARKS = {
+    "akka-uct": 0,
+    "als": 0,
     "chi-square": 0,
+    "db-shootout": 0,
+    "dec-tree": 0,
+    "dotty": 0,
+    "dummy": 0,
+    "finagle-chirper": 0,
+    "finagle-http": 0,
+    "fj-kmeans": 0,
     "future-genetic": 0,
     "gauss-mix": 0,
+    "log-regression": 0,
+    "mnemonics": 0,
+    "movie-lens": 0,
     "naive-bayes": 0,
+    "neo4j-analytics": 0,
+    "page-rank": 0,
+    "par-mnemonics": 0,
+    "philosophers": 0,
+    "reactors": 0,
     "rx-scrabble": 0,
-    "scala-stm-bench7": 0,
     "scala-kmeans": 0,
+    "scala-stm-bench7": 0,
     "scrabble": 0,
 }
 
