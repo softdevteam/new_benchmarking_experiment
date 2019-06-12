@@ -18,10 +18,11 @@ sh setup.sh
 
 RENAISSANCE_V="0.9.0"
 GRAALCE_V="1.0.0-rc16"
-# This is the full list of benchmarks, but some of these are very slow
-# BENCHMARKS="actors,apache-spark,database,jdk-concurrent,jdk-streams,neo4j,rx,scala-dotty,scala-stdlib,scala-stm,twitter-finagle"
-# The benchmark list we're using below are the somewhat faster ones
-BENCHMARKS="chi-square,future-genetic,gauss-mix,naive-bayes,rx-scrabble,scala-stm-bench7,scala-kmeans,scrabble"
+# We run all benchmarks. Some of these are very slow.
+# For a reduced set of fast benchmarks, use:
+#BENCHMARKS="chi-square,future-genetic,gauss-mix,naive-bayes,rx-scrabble,scala-stm-bench7,scala-kmeans,scrabble"
+BENCHMARKS="akka-uct,als,chi-square,db-shootout,dec-tree,dotty,dummy,finagle-chirper,finagle-http,fj-kmeans,future-genetic,gauss-mix,log-regression,mnemonics,movie-lens,naive-bayes,neo4j-analytics,page-rank,par-mnemonics,philosophers,reactors,rx-scrabble,scala-kmeans,scala-stm-bench7,scrabble"
+
 PEXECS=10
 IPITERS=2000
 
