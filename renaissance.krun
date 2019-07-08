@@ -47,8 +47,10 @@ BENCHMARKS = {
     "dec-tree": 0,
     "dotty": 0,
     "dummy": 0,
-    "finagle-chirper": 0,
-    "finagle-http": 0,
+    # We skip the finagle benchmarks because they involve networking and
+    # finagle-chirper doesn't work when the network interface is disabled.
+    #"finagle-chirper": 0,
+    #"finagle-http": 0,
     "fj-kmeans": 0,
     "future-genetic": 0,
     "gauss-mix": 0,
