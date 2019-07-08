@@ -46,7 +46,8 @@ BENCHMARKS = {
     "db-shootout": 0,
     "dec-tree": 0,
     "dotty": 0,
-    "dummy": 0,
+    # The dummy benchmark isn't a real benchmark, so we skip this.
+    #"dummy": 0,
     # We skip the finagle benchmarks because they involve networking and
     # finagle-chirper doesn't work when the network interface is disabled.
     #"finagle-chirper": 0,
