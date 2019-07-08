@@ -17,9 +17,9 @@ ITERATIONS_ALL_VMS = 2000
 
 MAIL_TO = []
 
-# These must match the arguments passed to to the runner in krun_ext_*.py
-HEAP_LIMIT = 1024 * 1024 * 1024 * 12
-STACK_LIMIT = 1024 * 1024 * 1024 * 12
+# The heap limit must be at least the value passed to to the runner in krun_ext_*.py
+HEAP_LIMIT = 1024 * 1024 * 18  # 18 GiB
+STACK_LIMIT = 1024 * 16  # 16 MiB
 
 VARIANTS = {
     "default-ext": None,
