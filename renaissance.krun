@@ -50,6 +50,7 @@ BENCHMARKS = {
     #"dummy": 0,
     # We skip the finagle benchmarks because they involve networking and
     # finagle-chirper doesn't work when the network interface is disabled.
+    # https://github.com/renaissance-benchmarks/renaissance/issues/188
     #"finagle-chirper": 0,
     #"finagle-http": 0,
     "fj-kmeans": 0,
@@ -57,10 +58,14 @@ BENCHMARKS = {
     "gauss-mix": 0,
     "log-regression": 0,
     "mnemonics": 0,
-    "movie-lens": 0,
+    # Runs out of heap:
+    # https://github.com/renaissance-benchmarks/renaissance/issues/187
+    #"movie-lens": 0,
     "naive-bayes": 0,
     "neo4j-analytics": 0,
-    "page-rank": 0,
+    # Errors in teardown:
+    # https://github.com/renaissance-benchmarks/renaissance/issues/189
+    #"page-rank": 0,
     "par-mnemonics": 0,
     "philosophers": 0,
     "reactors": 0,
