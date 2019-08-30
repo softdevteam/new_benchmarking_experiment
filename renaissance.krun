@@ -36,6 +36,11 @@ VMS = {
         'variants': ['default-ext'],
         'n_iterations': ITERATIONS_ALL_VMS,
     },
+    'openj9': {
+        'vm_def': ExternalSuiteVMDef(os.path.join(DIR, "krun_ext_openj9.py")),
+        'variants': ['default-ext'],
+        'n_iterations': ITERATIONS_ALL_VMS,
+    },
 }
 
 # Benchmark parameters unused in this experiment, so set them all zero.
@@ -75,7 +80,10 @@ BENCHMARKS = {
     "scrabble": 0,
 }
 
-SKIP = []
+SKIP = [
+    # null ptr exception in teardown.
+    "db-shootout:openj9:default-ext",
+]
 
 # Pre/post commands for a Debian 9 system using postfix for sending mail.
 # Make sure the interfaces you want to be taken down are marked `auto` in
