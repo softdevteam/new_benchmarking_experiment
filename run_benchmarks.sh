@@ -14,8 +14,6 @@
 
 set -e
 
-sh setup.sh
-
 RENAISSANCE_V="0.9.0"
 GRAALCE_V="1.0.0-rc16"
 # We run all benchmarks. Some of these are very slow.
