@@ -51,26 +51,18 @@ BENCHMARKS = {
     "db-shootout": 0,
     "dec-tree": 0,
     "dotty": 0,
-    # The dummy benchmark isn't a real benchmark, so we skip this.
-    #"dummy": 0,
-    # We skip the finagle benchmarks because they involve networking and
-    # finagle-chirper doesn't work when the network interface is disabled.
-    # https://github.com/renaissance-benchmarks/renaissance/issues/188
-    #"finagle-chirper": 0,
-    #"finagle-http": 0,
+    "dummy": 0,
+    "finagle-chirper": 0,
+    "finagle-http": 0,
     "fj-kmeans": 0,
     "future-genetic": 0,
     "gauss-mix": 0,
     "log-regression": 0,
     "mnemonics": 0,
-    # Runs out of heap:
-    # https://github.com/renaissance-benchmarks/renaissance/issues/187
-    #"movie-lens": 0,
+    "movie-lens": 0,
     "naive-bayes": 0,
     "neo4j-analytics": 0,
-    # Errors in teardown:
-    # https://github.com/renaissance-benchmarks/renaissance/issues/189
-    #"page-rank": 0,
+    "page-rank": 0,
     "par-mnemonics": 0,
     "philosophers": 0,
     "reactors": 0,
@@ -81,8 +73,28 @@ BENCHMARKS = {
 }
 
 SKIP = [
+    # === Always Skip ===
+    # The dummy benchmark isn't a real benchmark, so we skip this.
+    "dummy:*:default-ext",
+    # We skip the finagle benchmarks because they involve networking and
+    # finagle-chirper doesn't work when the network interface is disabled.
+    # https://github.com/renaissance-benchmarks/renaissance/issues/188
+    "finagle-chirper:*:default-ext",
+    "finagle-http:*:default-ext",
+
+    # === Skip on OpenJ9 ===
     # null ptr exception in teardown.
     "db-shootout:openj9:default-ext",
+
+    # === Skip on Graal ===
+    # Runs out of heap:
+    # https://github.com/renaissance-benchmarks/renaissance/issues/187
+    "movie-lens:graal-ce:default-ext",
+    "movie-lens:graal-ce-hotspot:default-ext",
+    # Errors in teardown:
+    # https://github.com/renaissance-benchmarks/renaissance/issues/189
+    "page-rank:graal-ce:default-ext",
+    "page-rank:graal-ce-hotspot:default-ext",
 ]
 
 # Pre/post commands for a Debian 9 system using postfix for sending mail.
