@@ -86,6 +86,9 @@ SKIP = [
     # null ptr exception in teardown.
     "db-shootout:openj9:default-ext",
 
+    # Runs out of heap -- same as Graal.
+    "movie-lens:openj9:default-ext",
+
     # === Skip on Graal ===
     # Runs out of heap:
     # https://github.com/renaissance-benchmarks/renaissance/issues/187
