@@ -14,16 +14,18 @@
 
 set -e
 
-RENAISSANCE_V="0.9.0"
-GRAALCE_V="1.0.0-rc16"
-J9_V="0.15.1"
+DIRNAME=`dirname $0`
+
+if [ ! -f ${DIRNAME}/paths.sh ]; then
+    echo You need to run 'make setup' before running this 1>&2
+    exit 1
+fi
+. ${DIRNAME}/paths.sh
 
 # We run all benchmarks. Some of these are very slow.
 # For a reduced set of fast benchmarks, use:
 #BENCHMARKS="chi-square,future-genetic,gauss-mix,naive-bayes,rx-scrabble,scala-stm-bench7,scala-kmeans,scrabble"
-BENCHMARKS="akka-uct,als,chi-square,db-shootout,dec-tree,dotty,dummy,finagle-chirper,finagle-http,fj-kmeans,future-genetic,gauss-mix,log-regression,mnemonics,movie-lens,naive-bayes,neo4j-analytics,page-rank,par-mnemonics,philosophers,reactors,rx-scrabble,scala-kmeans,scala-stm-bench7,scrabble"
-# db-shootout crashes with a null pointer exception under J9.
-J9_BENCHMARKS="akka-uct,als,chi-square,dec-tree,dotty,dummy,finagle-chirper,finagle-http,fj-kmeans,future-genetic,gauss-mix,log-regression,mnemonics,movie-lens,naive-bayes,neo4j-analytics,page-rank,par-mnemonics,philosophers,reactors,rx-scrabble,scala-kmeans,scala-stm-bench7,scrabble"
+BENCHMARKS="akka-uct,als,chi-square,db-shootout,dec-tree,dotty,dummy,finagle-chirper,finagle-http,fj-kmeans,future-genetic,gauss-mix,log-regression,mnemonics,movie-lens,naive-bayes,neo4j-analytics,page-rank,par-mnemonics,philosophers,reactors,rx-scrabble,scala-doku,scala-kmeans,scala-stm-bench7,scrabble"
 
 PEXECS=10
 IPITERS=2000
@@ -34,15 +36,15 @@ while [ $i -lt ${PEXECS} ]; do
     #  https://github.com/renaissance-benchmarks/measurements/blob/7d3f09e05df3c5477fabe531ec5effc07e33f7aa/README.md
 
     # Graal CE running the normal HotSpot compiler
-    graalvm-ce-${GRAALCE_V}/bin/java -Xms12G -Xmx12G -XX:-EnableJVMCI -XX:-UseJVMCICompiler -jar renaissance-gpl-${RENAISSANCE_V}.jar -r ${IPITERS} --csv openjdk-pexec-${i}.csv $BENCHMARKS
+    ${GRAALCE_DIR}/bin/java -Xms12G -Xmx12G -XX:-EnableJVMCI -XX:-UseJVMCICompiler -jar ${RENAISSANCE_JAR} -r ${IPITERS} --csv openjdk-pexec-${i}.csv $BENCHMARKS
 
     # Graal CE
-    graalvm-ce-${GRAALCE_V}/bin/java -Xms12G -Xmx12G -jar renaissance-gpl-${RENAISSANCE_V}.jar -r ${IPITERS} --csv graalvm-ce-pexec-${i}.csv $BENCHMARKS
+    ${GRAALCE_DIR}/bin/java -Xms12G -Xmx12G -jar ${RENAISSANCE_JAR} -r ${IPITERS} --csv graalvm-ce-pexec-${i}.csv $BENCHMARKS
 
     # OpenJ9
-    ./OpenJDK12U-jdk_x64_linux_openj9_12.0.2_10_openj9-${J9_V}/bin/java \
-        -Xms12G -Xmx12G -jar renaissance-gpl-${RENAISSANCE_V}.jar \
-        -r ${IPITERS} --csv openj9-pexec-${i}.csv ${J9_BENCHMARKS}
+    ${OPENJ9_DIR}/bin/java \
+        -Xms12G -Xmx12G -jar ${RENAISSANCE_JAR} \
+        -r ${IPITERS} --csv openj9-pexec-${i}.csv ${BENCHMARKS}
 
     i=$(($i + 1))
 done

@@ -2,3 +2,4 @@
 graalvm-ce-*
 *.jar
 target/
+paths.sh
