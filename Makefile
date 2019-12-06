@@ -54,8 +54,10 @@ ${J9_DIR}: ${J9_TGZ}
 	tar xzf ${J9_TGZ}
 	mv jdk-11.0.5+10 ${J9_DIR}
 
-run-standalone: setup
-	sh run_benchmarks.sh
+run-standalone: run-renaissance-standalone run-dacapo-standalone
+
+run-renaissance-standalone: setup
+	sh run_renaissance.sh
 
 run-dacapo-standalone: setup
 	${PYTHON} run_dacapo.py
