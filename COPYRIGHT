@@ -17,3 +17,7 @@ of their contributions is retained by an organisation:
       King's College London
     Laurence Tratt <laurie@tratt.net>: copyright retained by
       King's College London
+
+
+run_dacapo.py is derived from work under the same Apache2+MIT license:
+https://github.com/softdevteam/warmup_experiment/blob/a7518de845f4a540015caa2722b81183c0e52483/extbench/rundacapo.py

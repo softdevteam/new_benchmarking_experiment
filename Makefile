@@ -8,9 +8,13 @@
 # copied, modified, or distributed except according to those terms.
 
 FETCH=wget
+PYTHON=python3
 
 RENAISSANCE_V=0.10.0
 RENAISSANCE_JAR=renaissance-gpl-${RENAISSANCE_V}.jar
+
+DACAPO_V=9.12
+DACAPO_JAR=dacapo-${DACAPO_V}-MR1-bach.jar
 
 # For the VMs, we use the latest versions that target JDK11 at the time of writing.
 GRAALCE_V=19.3.0
@@ -25,13 +29,17 @@ PATHS_SH=paths.sh
 
 TOP_DIR=`pwd`
 
-setup: ${RENAISSANCE_JAR} ${GRAALCE_DIR} ${J9_DIR}
+setup: ${RENAISSANCE_JAR} ${DACAPO_JAR} ${GRAALCE_DIR} ${J9_DIR}
 	echo OPENJ9_DIR=${TOP_DIR}/${J9_DIR} > ${PATHS_SH}
 	echo GRAALCE_DIR=${TOP_DIR}/${GRAALCE_DIR} >> ${PATHS_SH}
 	echo RENAISSANCE_JAR=${TOP_DIR}/${RENAISSANCE_JAR} >> ${PATHS_SH}
+	echo DACAPO_JAR=${DACAPO_JAR} >> ${PATHS_SH}
 
 ${RENAISSANCE_JAR}:
 	${FETCH} https://github.com/renaissance-benchmarks/renaissance/releases/download/v${RENAISSANCE_V}/${RENAISSANCE_JAR}
+
+${DACAPO_JAR}:
+	${FETCH} https://downloads.sourceforge.net/project/dacapobench/${DACAPO_V}-bach-MR1/${DACAPO_JAR}
 
 ${GRAALCE_TGZ}:
 	${FETCH} https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-${GRAALCE_V}/${GRAALCE_TGZ}
@@ -48,6 +56,9 @@ ${J9_DIR}: ${J9_TGZ}
 
 run-standalone: setup
 	sh run_benchmarks.sh
+
+run-dacapo-standalone: setup
+	${PYTHON} run_dacapo.py
 
 .PHONY: clean
 clean:
