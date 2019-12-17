@@ -16,9 +16,9 @@ RENAISSANCE_JAR=renaissance-gpl-${RENAISSANCE_V}.jar
 DACAPO_V=9.12
 DACAPO_JAR=dacapo-${DACAPO_V}-MR1-bach.jar
 
-SPEC_INSTALL_JAR=SPECjvm2008_1_01_setup.jar
-SPEC_DIR=SPECjvm2008_1_01
-SPEC_JAR=SPECjvm2008.jar
+SPECJVM_INSTALL_JAR=SPECjvm2008_1_01_setup.jar
+SPECJVM_DIR=SPECjvm2008_1_01
+SPECJVM_JAR=SPECjvm2008.jar
 
 # For the VMs, we use the latest versions that target JDK11 at the time of writing.
 GRAALCE_V=19.3.0
@@ -33,13 +33,19 @@ PATHS_SH=paths.sh
 
 TOP_DIR=`pwd`
 
-setup: ${GRAALCE_DIR} ${J9_DIR} ${RENAISSANCE_JAR} ${DACAPO_JAR} ${SPEC_DIR}/${SPEC_JAR}
+PEXECS=10
+INPROC_ITERS=2000
+
+TEST_PEXECS=1
+TEST_INPROC_ITERS=3
+
+setup: ${GRAALCE_DIR} ${J9_DIR} ${RENAISSANCE_JAR} ${DACAPO_JAR} ${SPECJVM_DIR}/${SPECJVM_JAR}
 	echo OPENJ9_DIR=${TOP_DIR}/${J9_DIR} > ${PATHS_SH}
 	echo GRAALCE_DIR=${TOP_DIR}/${GRAALCE_DIR} >> ${PATHS_SH}
 	echo RENAISSANCE_JAR=${TOP_DIR}/${RENAISSANCE_JAR} >> ${PATHS_SH}
 	echo DACAPO_JAR=${DACAPO_JAR} >> ${PATHS_SH}
-	echo SPEC_JAR=${TOP_DIR}/${SPEC_DIR}/${SPEC_JAR} >> ${PATHS_SH}
-	echo SPEC_DIR=${TOP_DIR}/${SPEC_DIR} >> ${PATHS_SH}
+	echo SPECJVM_JAR=${TOP_DIR}/${SPECJVM_DIR}/${SPECJVM_JAR} >> ${PATHS_SH}
+	echo SPECJVM_DIR=${TOP_DIR}/${SPECJVM_DIR} >> ${PATHS_SH}
 
 ${RENAISSANCE_JAR}:
 	${FETCH} https://github.com/renaissance-benchmarks/renaissance/releases/download/v${RENAISSANCE_V}/${RENAISSANCE_JAR}
@@ -47,18 +53,18 @@ ${RENAISSANCE_JAR}:
 ${DACAPO_JAR}:
 	${FETCH} https://downloads.sourceforge.net/project/dacapobench/${DACAPO_V}-bach-MR1/${DACAPO_JAR}
 
-${SPEC_INSTALL_JAR}:
-	${FETCH} http://spec.cs.miami.edu/downloads/osg/java/${SPEC_INSTALL_JAR}
+${SPECJVM_INSTALL_JAR}:
+	${FETCH} http://spec.cs.miami.edu/downloads/osg/java/${SPECJVM_INSTALL_JAR}
 
-${SPEC_DIR}/${SPEC_JAR}: ${SPEC_INSTALL_JAR}
+${SPECJVM_DIR}/${SPECJVM_JAR}: ${SPECJVM_INSTALL_JAR}
 	# We are downloading from a mirror, as spec.org uses magic to obfuscate
 	# their FTP link. To be sure it's the same JAR, we check the md5 hash.
-	[ "`md5sum ${SPEC_INSTALL_JAR} | awk '{print $$1}'`" = "144fc07007fc099befd3d51d5992cbcf" ]
-	${GRAALCE_DIR}/bin/java -jar SPECjvm2008_1_01_setup.jar \
-		-DUSER_INSTALL_DIR=${SPEC_DIR} -i silent
+	[ "`md5sum ${SPECJVM_INSTALL_JAR} | awk '{print $$1}'`" = "144fc07007fc099befd3d51d5992cbcf" ]
+	${GRAALCE_DIR}/bin/java -jar ${SPECJVM_INSTALL_JAR} \
+		-DUSER_INSTALL_DIR=${SPECJVM_DIR} -i silent
 	# To prevent make re-running the installer.
 	# (installer extracts with a datestamp from 2009).
-	touch ${SPEC_DIR}/${SPEC_JAR}
+	touch ${SPECJVM_DIR}/${SPECJVM_JAR}
 
 ${GRAALCE_TGZ}:
 	${FETCH} https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-${GRAALCE_V}/${GRAALCE_TGZ}
@@ -76,15 +82,27 @@ ${J9_DIR}: ${J9_TGZ}
 run-standalone: run-renaissance-standalone run-dacapo-standalone run-spec-standalone
 
 run-renaissance-standalone: setup
-	sh run_renaissance.sh
+	${PYTHON} run_standalone.py renaissance ${PEXECS} ${INPROC_ITERS}
 
 run-dacapo-standalone: setup
-	${PYTHON} run_dacapo.py
+	${PYTHON} run_standalone.py dacapo ${PEXECS} ${INPROC_ITERS}
 
 run-spec-standalone: setup
-	${PYTHON} run_spec.py
+	${PYTHON} run_standalone.py spec ${PEXECS} ${INPROC_ITERS}
+
+# Run a small set of quick tests to check things are not obviously broken.
+test: setup
+	# Test Krun ext scripts run OK and generate valid JSON.
+	${PYTHON} -c "import json; json.loads('`${PYTHON} krun_ext_graal_ce.py renaissance__akka-uct ${TEST_INPROC_ITERS} 0 0`')"
+	${PYTHON} -c "import json; json.loads('`${PYTHON} krun_ext_graal_ce.py dacapo__avrora ${TEST_INPROC_ITERS} 0 0`')"
+	${PYTHON} -c "import json; json.loads('`${PYTHON} krun_ext_graal_ce.py specjvm__compress ${TEST_INPROC_ITERS} 0 0`')"
+
+	# Quick standalone runs.
+	${PYTHON} run_standalone.py renaissance ${TEST_PEXECS} ${TEST_INPROC_ITERS}
+	${PYTHON} run_standalone.py dacapo ${TEST_PEXECS} ${TEST_INPROC_ITERS}
+	${PYTHON} run_standalone.py spec ${TEST_PEXECS} ${TEST_INPROC_ITERS}
 
 .PHONY: clean
 clean:
 	rm -rf ${RENAISSANCE_JAR} ${GRAALCE_TGZ} ${GRAALCE_DIR} ${J9_TGZ} \
-		${J9_DIR} ${SPEC_DIR} ${SPEC_INSTALL_JAR}
+		${J9_DIR} ${SPECJVM_DIR} ${SPECJVM_INSTALL_JAR}

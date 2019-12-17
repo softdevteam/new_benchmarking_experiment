@@ -5,19 +5,8 @@ Graal CE script for use with Krun's ExternalSuiteVMDef.
 """
 
 import sys
-from krun_ext_common import make_temp_file, run
+from krun_ext_common import run, emit_process_exec_json
 
-RENAISSANCE_V = "0.9.0"
-GRAALCE_V = "1.0.0-rc16"
 
 _, benchmark, num_iters, param, instr = sys.argv
-temp_file = make_temp_file()
-
-# Ensure the -Xms/-Xmx args match the stack/heap values in the Krun config!
-args = [
-    "graalvm-ce-%s/bin/java" % GRAALCE_V,
-    "-Xms12G", "-Xmx12G", "-jar", "renaissance-gpl-%s.jar" % RENAISSANCE_V,
-    "-r", num_iters, "--csv", temp_file, benchmark
-]
-
-run(args, benchmark, int(num_iters), temp_file)
+emit_process_exec_json(run("graal-ce", benchmark, int(num_iters)))
