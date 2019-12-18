@@ -16,8 +16,8 @@ with open("paths.sh") as f:
         k, v = line.strip().split("=")
         PATHS[k] = v
 
-# Make sure these limits match those in the Krun config file.
-JAVA_MEM_ARGS = ["-Xms12G", "-Xmx12G"]
+JAVA_HEAP_GB = 12
+JAVA_MEM_ARGS = [f"-Xms{JAVA_HEAP_GB}G", f"-Xmx{JAVA_HEAP_GB}G"]
 
 # Use `java -jar renaissance-gpl-0.10.0.jar --raw-list` to get this list.
 RENAISSANCE_BENCHMARKS = ["akka-uct", "als", "chi-square", "db-shootout",

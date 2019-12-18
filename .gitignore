@@ -3,3 +3,5 @@ graalvm-ce-*
 *.jar
 target/
 paths.sh
+krun
+krun_snippet.py
