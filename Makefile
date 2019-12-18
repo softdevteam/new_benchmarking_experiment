@@ -31,7 +31,14 @@ J9_DIR=OpenJDK11U-jdk_x64_linux_openj9_11.0.5_10_openj9-${J9_V}
 
 PATHS_SH=paths.sh
 
+KRUN_SNIPPET=krun_snippet.py
+
 TOP_DIR=`pwd`
+
+KRUN_DIR=krun
+KRUN=${KRUN_DIR}/krun.py
+KRUN_VERSION=fe322084c68b4b3c0b7697612a2cafc6221115e1
+LIBKRUNTIME=${KRUN_DIR}/libkrun/libkruntime.so
 
 PEXECS=10
 INPROC_ITERS=2000
@@ -39,7 +46,8 @@ INPROC_ITERS=2000
 TEST_PEXECS=1
 TEST_INPROC_ITERS=3
 
-setup: ${GRAALCE_DIR} ${J9_DIR} ${RENAISSANCE_JAR} ${DACAPO_JAR} ${SPECJVM_DIR}/${SPECJVM_JAR}
+.PHONY: setup
+setup: ${GRAALCE_DIR} ${J9_DIR} ${RENAISSANCE_JAR} ${DACAPO_JAR} ${SPECJVM_DIR}/${SPECJVM_JAR} ${LIBKRUNTIME} ${KRUN_SNIPPET}
 	echo OPENJ9_DIR=${TOP_DIR}/${J9_DIR} > ${PATHS_SH}
 	echo GRAALCE_DIR=${TOP_DIR}/${GRAALCE_DIR} >> ${PATHS_SH}
 	echo RENAISSANCE_JAR=${TOP_DIR}/${RENAISSANCE_JAR} >> ${PATHS_SH}
@@ -79,6 +87,19 @@ ${J9_DIR}: ${J9_TGZ}
 	tar xzf ${J9_TGZ}
 	mv jdk-11.0.5+10 ${J9_DIR}
 
+.PHONY: krun
+krun: ${LIBKRUNTIME}
+
+${KRUN}:
+	git clone https://github.com/softdevteam/krun ${KRUN_DIR}
+	cd ${KRUN_DIR} && git checkout ${KRUN_VERSION}
+
+${LIBKRUNTIME}: ${KRUN}
+	cd ${KRUN_DIR} && ${MAKE} NO_MSRS=1
+
+${KRUN_SNIPPET}: krun_ext_common.py mk_krun_snippet.py
+	${PYTHON} mk_krun_snippet.py $@
+
 run-standalone: run-renaissance-standalone run-dacapo-standalone run-spec-standalone
 
 run-renaissance-standalone: setup
@@ -103,6 +124,10 @@ test: setup
 	${PYTHON} run_standalone.py spec ${TEST_PEXECS} ${TEST_INPROC_ITERS}
 
 .PHONY: clean
-clean:
+clean: clean-krun-results
 	rm -rf ${RENAISSANCE_JAR} ${GRAALCE_TGZ} ${GRAALCE_DIR} ${J9_TGZ} \
-		${J9_DIR} ${SPECJVM_DIR} ${SPECJVM_INSTALL_JAR}
+		${J9_DIR} ${SPECJVM_DIR} ${SPECJVM_INSTALL_JAR} ${KRUN_SNIPPET}
+
+clean-krun-results:
+	rm -rf experiment_results.json.bz2 experiment.log experiment.manifest \
+		experiment_envlogs
