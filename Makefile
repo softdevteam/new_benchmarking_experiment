@@ -37,7 +37,7 @@ TOP_DIR=`pwd`
 
 KRUN_DIR=krun
 KRUN=${KRUN_DIR}/krun.py
-KRUN_VERSION=fe322084c68b4b3c0b7697612a2cafc6221115e1
+KRUN_VERSION=8f59b2b2c96733bf05d75fa9481a539094a94008
 LIBKRUNTIME=${KRUN_DIR}/libkrun/libkruntime.so
 
 PEXECS=10
@@ -124,10 +124,14 @@ test: setup
 	${PYTHON} run_standalone.py spec ${TEST_PEXECS} ${TEST_INPROC_ITERS}
 
 .PHONY: clean
-clean: clean-krun-results
+clean: clean-krun-results clean-temp-files
 	rm -rf ${RENAISSANCE_JAR} ${GRAALCE_TGZ} ${GRAALCE_DIR} ${J9_TGZ} \
 		${J9_DIR} ${SPECJVM_DIR} ${SPECJVM_INSTALL_JAR} ${KRUN_SNIPPET}
 
 clean-krun-results:
 	rm -rf experiment_results.json.bz2 experiment.log experiment.manifest \
 		experiment_envlogs
+
+# The suites have a tendency to write stuff all over the experiment dir.
+clean-temp-files:
+	rm -rf page_rank* scratch target

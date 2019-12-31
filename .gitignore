@@ -5,3 +5,5 @@ target/
 paths.sh
 krun
 krun_snippet.py
+krun_snippet.pyc
+__pycache__
