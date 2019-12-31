@@ -124,10 +124,14 @@ test: setup
 	${PYTHON} run_standalone.py spec ${TEST_PEXECS} ${TEST_INPROC_ITERS}
 
 .PHONY: clean
-clean: clean-krun-results
+clean: clean-krun-results clean-temp-files
 	rm -rf ${RENAISSANCE_JAR} ${GRAALCE_TGZ} ${GRAALCE_DIR} ${J9_TGZ} \
 		${J9_DIR} ${SPECJVM_DIR} ${SPECJVM_INSTALL_JAR} ${KRUN_SNIPPET}
 
 clean-krun-results:
 	rm -rf experiment_results.json.bz2 experiment.log experiment.manifest \
 		experiment_envlogs
+
+# The suites have a tendency to write stuff all over the experiment dir.
+clean-temp-files:
+	rm -rf page_rank* scratch target
