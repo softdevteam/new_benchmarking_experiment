@@ -48,14 +48,17 @@ VMS = {
     },
 }
 
-# Pre/post commands for a Debian 9 system using postfix for sending mail.
-# Make sure the interfaces you want to be taken down are marked `auto` in
-# /etc/networking/interfaces otherwise ifup won't work.
+# Pre/post commands for a Debian 10 system using the default exim4 MTA for
+# sending mail. Ensure the system can send mail by configuring it as an
+# "internet site" with `sudo dpkg-reconfigure exim4-config`.
+#
+# Make sure the interfaces you want to be taken down are marked
+# `auto` in /etc/networking/interfaces otherwise ifup won't work.
 PING_HOST = "bencher8.soft-dev.org"
 PRE_EXECUTION_CMDS = [
     "while true; do sudo ifdown -a; sleep 5; ping -q -c 10 %s || break; done" % PING_HOST,
     "sudo systemctl stop cron",
-    "sudo systemctl stop postfix",
+    "sudo systemctl stop exim4",
     "sudo systemctl stop systemd-tmpfiles-clean.timer",
     "sudo systemctl stop ssh",
 ]
@@ -64,7 +67,7 @@ POST_EXECUTION_CMDS = [
     "while true; do ping -c 3 -q %s && break; sudo ifdown -a; sleep 5; sudo ifup -a; done" % PING_HOST,
     "sudo systemctl start ssh || true",
     "sudo systemctl start cron || true",
-    "sudo systemctl start postfix || true",
+    "sudo systemctl start exim4 || true",
     "sudo systemctl start systemd-tmpfiles-clean.timer || true",
 ]
 
