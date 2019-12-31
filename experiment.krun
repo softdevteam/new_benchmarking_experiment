@@ -59,13 +59,30 @@ PRE_EXECUTION_CMDS = [
     "while true; do sudo ifdown -a; sleep 5; ping -q -c 10 %s || break; done" % PING_HOST,
     "sudo systemctl stop cron",
     "sudo systemctl stop exim4",
+
+    # systemd has lots of timers which could trigger mid-experiment. Kill them.
+    # Use `systemctl list-timers` to see what you can kill.
     "sudo systemctl stop systemd-tmpfiles-clean.timer",
+    "sudo systemctl stop systemd-timesyncd.service",
+    "sudo systemctl stop apt-daily-upgrade.timer",
+    "sudo systemctl stop logrotate.timer",
+    "sudo systemctl stop man-db.timer",
+    "sudo systemctl stop apt-daily.service",
+
     "sudo systemctl stop ssh",
 ]
 
 POST_EXECUTION_CMDS = [
     "while true; do ping -c 3 -q %s && break; sudo ifdown -a; sleep 5; sudo ifup -a; done" % PING_HOST,
     "sudo systemctl start ssh || true",
+
+    "sudo systemctl stop apt-daily.service",
+    "sudo systemctl stop man-db.timer",
+    "sudo systemctl stop logrotate.timer",
+    "sudo systemctl stop apt-daily-upgrade.timer",
+    "sudo systemctl stop systemd-timesyncd.service",
+    "sudo systemctl stop systemd-tmpfiles-clean.timer",
+
     "sudo systemctl start cron || true",
     "sudo systemctl start exim4 || true",
     "sudo systemctl start systemd-tmpfiles-clean.timer || true",
