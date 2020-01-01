@@ -88,6 +88,7 @@ ${J9_TGZ}:
 ${J9_DIR}: ${J9_TGZ}
 	tar xzf ${J9_TGZ}
 	mv jdk-11.0.5+10 ${J9_DIR}
+	touch ${J9_DIR}
 
 .PHONY: krun
 krun: ${LIBKRUNTIME}
