@@ -48,6 +48,8 @@ TEST_INPROC_ITERS=3
 
 .PHONY: setup
 setup: ${GRAALCE_DIR} ${J9_DIR} ${RENAISSANCE_JAR} ${DACAPO_JAR} ${SPECJVM_DIR}/${SPECJVM_JAR} ${LIBKRUNTIME} ${KRUN_SNIPPET}
+
+${PATHS_SH}:
 	echo OPENJ9_DIR=${TOP_DIR}/${J9_DIR} > ${PATHS_SH}
 	echo GRAALCE_DIR=${TOP_DIR}/${GRAALCE_DIR} >> ${PATHS_SH}
 	echo RENAISSANCE_JAR=${TOP_DIR}/${RENAISSANCE_JAR} >> ${PATHS_SH}
@@ -86,6 +88,7 @@ ${J9_TGZ}:
 ${J9_DIR}: ${J9_TGZ}
 	tar xzf ${J9_TGZ}
 	mv jdk-11.0.5+10 ${J9_DIR}
+	touch ${J9_DIR}
 
 .PHONY: krun
 krun: ${LIBKRUNTIME}
@@ -97,7 +100,7 @@ ${KRUN}:
 ${LIBKRUNTIME}: ${KRUN}
 	cd ${KRUN_DIR} && ${MAKE} NO_MSRS=1
 
-${KRUN_SNIPPET}: krun_ext_common.py mk_krun_snippet.py
+${KRUN_SNIPPET}: ${PATHS_SH} krun_ext_common.py mk_krun_snippet.py
 	${PYTHON} mk_krun_snippet.py $@
 
 run-standalone: run-renaissance-standalone run-dacapo-standalone run-spec-standalone
@@ -126,7 +129,7 @@ test: setup
 .PHONY: clean
 clean: clean-krun-results clean-temp-files
 	rm -rf ${RENAISSANCE_JAR} ${GRAALCE_TGZ} ${GRAALCE_DIR} ${J9_TGZ} \
-		${J9_DIR} ${SPECJVM_DIR} ${SPECJVM_INSTALL_JAR} ${KRUN_SNIPPET}
+		${J9_DIR} ${SPECJVM_DIR} ${SPECJVM_INSTALL_JAR} ${KRUN_SNIPPET} ${PATHS_SH}
 
 clean-krun-results:
 	rm -rf experiment_results.json.bz2 experiment.log experiment.manifest \
