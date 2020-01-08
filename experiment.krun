@@ -86,6 +86,9 @@ POST_EXECUTION_CMDS = [
     "sudo systemctl start cron || true",
     "sudo systemctl start exim4 || true",
     "sudo systemctl start systemd-tmpfiles-clean.timer || true",
+
+    # Pause to (force) send any mail that Krun may have generated.
+    "sudo exim4 -qff || true",
 ]
 
 # Stop cookie and result copy-off.

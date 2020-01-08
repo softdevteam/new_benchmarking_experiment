@@ -71,9 +71,9 @@ SKIP_RENAISANCE = {
     ],
     "openj9": [
         # Doesn't do anything.
-        "dummy",
+        "renaissance__dummy",
         # Use loopback networking.
-        "finagle-chirper", "finagle-http",
+        "renaissance__finagle-chirper", "renaissance__finagle-http",
     ],
 }
 
