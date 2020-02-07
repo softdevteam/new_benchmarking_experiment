@@ -116,6 +116,8 @@ SKIP_DACAPO = {
         "dacapo__eclipse",
         # URL /examples/jsp/jsp2/el/basic-arithmetic.jsp returned status 500 (expected 200)
         "dacapo__tomcat",
+        # We saw it hang when run on graal-ce. Good chance it hangs here too.
+        "dacapo__lusearch-fix",
     ],
     "graal-ce": [
         # java.lang.NoClassDefFoundError: com/sun/image/codec/jpeg/TruncatedFileException
@@ -127,6 +129,8 @@ SKIP_DACAPO = {
         "dacapo__tomcat",
         # javax.ejb.FinderException: Cannot find account forPRGS
         "dacapo__tradesoap",
+        # Sometimes hangs.
+        "dacapo__lusearch-fix",
     ],
     "openj9": [
         # java.lang.NoClassDefFoundError: com.sun.image.codec.jpeg.TruncatedFileException
@@ -140,6 +144,8 @@ SKIP_DACAPO = {
         "dacapo__tradebeans",
         # java.lang.ArrayIndexOutOfBoundsException: Array index out of range: -14
         "dacapo__tradesoap",
+        # We saw it hang when run on graal-ce. Good chance it hangs here too.
+        "dacapo__lusearch-fix",
     ]
 }
 
