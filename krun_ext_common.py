@@ -97,6 +97,8 @@ SKIP_SPECJVM = {
         "specjvm__compiler.compiler",
         # spec.harness.StopBenchmarkException: Error invoking bmSetupBenchmarkMethod
         "specjvm__compiler.sunflow",
+        # java.sql.SQLException: Failed to create database 'derby_dir/name1'
+        "specjvm__derby",
     ]
 }
 
