@@ -13,21 +13,24 @@ PYTHON=python3
 RENAISSANCE_V=0.10.0
 RENAISSANCE_JAR=renaissance-gpl-${RENAISSANCE_V}.jar
 
-DACAPO_V=9.12
-DACAPO_JAR=dacapo-${DACAPO_V}-MR1-bach.jar
+# We are using an evaluation snapshot because we had issues with benchmarks
+# from the stable release hanging.
+DACAPO_JAR=dacapo-evaluation-git+309e1fa-java8.jar
 
 SPECJVM_INSTALL_JAR=SPECjvm2008_1_01_setup.jar
 SPECJVM_DIR=SPECjvm2008_1_01
 SPECJVM_JAR=SPECjvm2008.jar
 
 # For the VMs, we use the latest versions that target JDK11 at the time of writing.
-GRAALCE_V=19.3.0
+#
+# For Graal-CE we use the "medium term support" version.
+GRAALCE_V=19.3.2
 GRAALCE_DIR=graalvm-ce-java11-${GRAALCE_V}
 GRAALCE_TGZ=graalvm-ce-java11-linux-amd64-${GRAALCE_V}.tar.gz
 
-J9_V=0.17.0
-J9_TGZ=OpenJDK11U-jdk_x64_linux_openj9_11.0.5_10_openj9-${J9_V}.tar.gz
-J9_DIR=OpenJDK11U-jdk_x64_linux_openj9_11.0.5_10_openj9-${J9_V}
+J9_V=0.20.0
+J9_TGZ=OpenJDK11U-jdk_x64_linux_openj9_11.0.7_10_openj9-${J9_V}.tar.gz
+J9_DIR=OpenJDK11U-jdk_x64_linux_openj9_11.0.7_10_openj9-${J9_V}
 
 PATHS_SH=paths.sh
 
@@ -61,7 +64,7 @@ ${RENAISSANCE_JAR}:
 	${FETCH} https://github.com/renaissance-benchmarks/renaissance/releases/download/v${RENAISSANCE_V}/${RENAISSANCE_JAR}
 
 ${DACAPO_JAR}:
-	${FETCH} https://downloads.sourceforge.net/project/dacapobench/${DACAPO_V}-bach-MR1/${DACAPO_JAR}
+	${FETCH} https://downloads.sourceforge.net/project/dacapobench/evaluation/${DACAPO_JAR}
 
 ${SPECJVM_INSTALL_JAR}:
 	${FETCH} http://spec.cs.miami.edu/downloads/osg/java/${SPECJVM_INSTALL_JAR}
@@ -83,11 +86,11 @@ ${GRAALCE_DIR}: ${GRAALCE_TGZ}
 	tar xfz ${GRAALCE_TGZ}
 
 ${J9_TGZ}:
-	${FETCH} https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.5%2B10_openj9-${J9_V}/${J9_TGZ}
+	${FETCH} https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.7%2B10_openj9-${J9_V}/${J9_TGZ}
 
 ${J9_DIR}: ${J9_TGZ}
 	tar xzf ${J9_TGZ}
-	mv jdk-11.0.5+10 ${J9_DIR}
+	mv jdk-11.0.7+10 ${J9_DIR}
 	touch ${J9_DIR}
 
 .PHONY: krun
