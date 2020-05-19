@@ -16,8 +16,8 @@ def main(suite, num_pexecs, num_ipis):
         from krun_ext_common import DACAPO_BENCHMARKS as benchmarks
         from krun_ext_common import SKIP_DACAPO as skip
     elif suite == "spec":
-        from krun_ext_common import SPEC_BENCHMARKS as benchmarks
-        from krun_ext_common import SKIP_SPEC as skip
+        from krun_ext_common import SPECJVM_BENCHMARKS as benchmarks
+        from krun_ext_common import SKIP_SPECJVM as skip
     else:
         raise ValueError(f"invalid suite: {suite}")
 

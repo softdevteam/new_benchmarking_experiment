@@ -19,7 +19,7 @@ with open("paths.sh") as f:
 JAVA_HEAP_GB = 12
 JAVA_MEM_ARGS = [f"-Xms{JAVA_HEAP_GB}G", f"-Xmx{JAVA_HEAP_GB}G"]
 
-# Use `java -jar renaissance-gpl-0.10.0.jar --raw-list` to get this list.
+# Use `java -jar <renaissance-jar> --raw-list` to get this list.
 RENAISSANCE_BENCHMARKS = ["akka-uct", "als", "chi-square", "db-shootout",
                           "dec-tree", "dotty", "dummy", "finagle-chirper",
                           "finagle-http", "fj-kmeans", "future-genetic",
@@ -29,10 +29,11 @@ RENAISSANCE_BENCHMARKS = ["akka-uct", "als", "chi-square", "db-shootout",
                           "reactors", "rx-scrabble", "scala-doku",
                           "scala-kmeans", "scala-stm-bench7", "scrabble"]
 
-# Run `java -jar dacapo.jar -l` to get this list.
-DACAPO_BENCHMARKS = ["avrora", "batik", "eclipse", "fop", "h2", "jython",
-                     "luindex", "lusearch", "lusearch-fix", "pmd", "sunflow",
-                     "tomcat", "tradebeans", "tradesoap", "xalan"]
+# Run `java -jar <dacapo-jar> -l` to get this list.
+DACAPO_BENCHMARKS = ["avrora", "batik", "biojava", "cassandra", "eclipse",
+                     "fop", "graphchi", "h2o", "jme", "jython", "kafka",
+                     "luindex", "lusearch", "sunflow", "tomcat", "tradebeans",
+                     "tradesoap", "xalan", "zxing"]
 
 # This list of benchmarks can be found at the end of the SPECjvm `-h` help
 # text. We omit the "startup" benchmarks, designed to measure JVM startup time.
@@ -56,102 +57,38 @@ SPECJVM_BENCHMARKS = [f"specjvm__{bm}" for bm in SPECJVM_BENCHMARKS]
 assert len(set(RENAISSANCE_BENCHMARKS).intersection(DACAPO_BENCHMARKS)) == 0
 assert len(set(RENAISSANCE_BENCHMARKS).intersection(SPECJVM_BENCHMARKS)) == 0
 
+# Benchmark skipping.
+#
+# We used to skip benchmarks we knew to crash, but now we let them run and
+# crash. This way we don't have to keep restarting the experiment to get a
+# "clean" run. It also has the advantage that the crash is documented in the
+# log file.
+
 SKIP_RENAISANCE = {
     "graal-ce": [
         # Doesn't do anything.
         "renaissance__dummy",
-        # Use loopback networking.
-        "renaissance__finagle-chirper", "renaissance__finagle-http",
     ],
     "graal-ce-hotspot": [
         # Doesn't do anything.
         "renaissance__dummy",
-        # Use loopback networking.
-        "renaissance__finagle-chirper", "renaissance__finagle-http",
     ],
     "openj9": [
         # Doesn't do anything.
         "renaissance__dummy",
-        # Use loopback networking.
-        "renaissance__finagle-chirper", "renaissance__finagle-http",
     ],
 }
 
-# Some SPECjvm benchmarks have bit-rotted, as this person also noted:
-# https://github.com/JochenHiller/jvm-perftests/tree/master/SPECjvm2008#running-benchmark
 SKIP_SPECJVM = {
-    "graal-ce-hotspot": [
-        # spec.harness.StopBenchmarkException: Error invoking bmSetupBenchmarkMethod
-        "specjvm__compiler.compiler",
-        # spec.harness.StopBenchmarkException: Error invoking bmSetupBenchmarkMethod
-        "specjvm__compiler.sunflow",
-    ],
-    "graal-ce": [
-        # spec.harness.StopBenchmarkException: Error invoking bmSetupBenchmarkMethod
-        "specjvm__compiler.compiler",
-        # spec.harness.StopBenchmarkException: Error invoking bmSetupBenchmarkMethod
-        "specjvm__compiler.sunflow",
-    ],
-    "openj9": [
-        # spec.harness.StopBenchmarkException: Error invoking bmSetupBenchmarkMethod
-        "specjvm__compiler.compiler",
-        # spec.harness.StopBenchmarkException: Error invoking bmSetupBenchmarkMethod
-        "specjvm__compiler.sunflow",
-        # java.sql.SQLException: Failed to create database 'derby_dir/name1'
-        "specjvm__derby",
-    ]
+    "graal-ce-hotspot": [],
+    "graal-ce": [],
+    "openj9": [],
 }
 
-# Batik requires the proprietary Oracle JDK (OpenJDK and Graal Community
-# Edition won't work):
-# https://sourceforge.net/p/dacapobench/mailman/message/36012149/
-#
-# Eclipse benchmark has bitrotted and no longer works on modern JVMs:
-# https://sourceforge.net/p/dacapobench/mailman/message/36013609/
-# https://github.com/jon-bell/dacapo-eclipse-hacker
 SKIP_DACAPO = {
-    "graal-ce-hotspot": [
-        # java.lang.NoClassDefFoundError: com/sun/image/codec/jpeg/TruncatedFileException
-        "dacapo__batik",
-        # java.lang.IllegalStateException: Unable to acquire application service.
-        # Ensure that the org.eclipse.core.runtime bundle is resolved and started.
-        "dacapo__eclipse",
-        # URL /examples/jsp/jsp2/el/basic-arithmetic.jsp returned status 500 (expected 200)
-        "dacapo__tomcat",
-        # We saw these hang when run on graal-ce. Good chance they hang here too.
-        "dacapo__lusearch-fix",
-        "dacapo__lusearch",
-    ],
-    "graal-ce": [
-        # java.lang.NoClassDefFoundError: com/sun/image/codec/jpeg/TruncatedFileException
-        "dacapo__batik",
-        # java.lang.IllegalStateException: Unable to acquire application service.
-        # Ensure that the org.eclipse.core.runtime bundle is resolved and started.
-        "dacapo__eclipse",
-        # URL /examples/jsp/jsp2/el/basic-arithmetic.jsp returned status 500 (expected 200)
-        "dacapo__tomcat",
-        # javax.ejb.FinderException: Cannot find account forPRGS
-        "dacapo__tradesoap",
-        # Sometimes hang.
-        "dacapo__lusearch-fix",
-        "dacapo__lusearch",
-    ],
-    "openj9": [
-        # java.lang.NoClassDefFoundError: com.sun.image.codec.jpeg.TruncatedFileException
-        "dacapo__batik",
-        # java.lang.IllegalStateException: Unable to acquire application service.
-        # Ensure that the org.eclipse.core.runtime bundle is resolved and started.
-        "dacapo__eclipse",
-        # URL /examples/jsp/jsp2/el/basic-arithmetic.jsp returned status 500 (expected 200)
-        "dacapo__tomcat",
-        # java.lang.ArrayIndexOutOfBoundsException: Array index out of range: -12
-        "dacapo__tradebeans",
-        # java.lang.ArrayIndexOutOfBoundsException: Array index out of range: -14
-        "dacapo__tradesoap",
-        # We saw these hang when run on graal-ce. Good chance they hang here too.
-        "dacapo__lusearch-fix",
-        "dacapo__lusearch",
-    ]
+    "graal-ce-hotspot": [],
+    "graal-ce": [],
+    "openj9": [],
 }
 
 

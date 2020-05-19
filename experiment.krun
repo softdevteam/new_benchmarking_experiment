@@ -25,6 +25,7 @@ MAIL_TO = []
 # We allow extra native heap in addition to the Java heap.
 HEAP_LIMIT = 1024 * 1024 * (JAVA_HEAP_GB + 4)
 STACK_LIMIT = 1024 * 1024 # 1GB
+EXECUTION_TIMEOUT = 60 * 60 * 15  # 15 hours.
 
 VARIANTS = {
     "default-ext": None,
